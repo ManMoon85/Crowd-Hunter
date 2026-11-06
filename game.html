@@ -268,10 +268,12 @@ $('psm').onclick=()=>{popAd();hide('menu');drawShop();show('shop')};
 $('sx_shop').onclick=()=>{hide('shop');show('menu')};
 $('start').onclick=()=>{
   popAd();
+  var isMobile=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  if(!isMobile||window.innerWidth>window.innerHeight){amb();startMission(sel);return;}
   var m=document.getElementById('rotate_msg');
   if(m){m.style.display='flex';m._pending=true;}
 };
-function chkOrient(){var m=document.getElementById('rotate_msg');if(!m)return;if(m._pending&&window.innerWidth>window.innerHeight){m.style.display='none';m._pending=false;amb();startMission(sel);}else if(!m._pending){m.style.display='none';}}
+function chkOrient(){var m=document.getElementById('rotate_msg');if(!m)return;var isMobile=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);if(!isMobile){m.style.display='none';if(m._pending){m._pending=false;amb();startMission(sel);}return;}if(m._pending&&window.innerWidth>window.innerHeight){m.style.display='none';m._pending=false;amb();startMission(sel);}else if(!m._pending){m.style.display='none';}}
 window.addEventListener('resize',chkOrient);
 const AdBridge = {
   _pool: [],
