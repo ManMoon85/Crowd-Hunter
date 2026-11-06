@@ -273,70 +273,64 @@ const AdBridge = {
       window.AndroidAdBridge.showAd('window.adRewardCallback(true)','window.adRewardCallback(false)');
       return;
     }
-    const VAST_URLS = [
-      'https://smooth-survey.com/dBm.FHzNdHG/NrvBZMGwUR/ieomp9xu/ZRUUl_kxPSTLcx2bMsDqE/3aORD-EktYNqzLYqwKMITHcH4mNVQG'
-    ];
-    const vastUrl = VAST_URLS[Math.floor(Math.random()*VAST_URLS.length)];
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;background:#000;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;';
-    document.body.appendChild(overlay);
     if(typeof setPause==='function') setPause(true);
-    let rewarded = false;
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:#000;z-index:99999;display:flex;flex-direction:column;';
+    // Skip bar
     const skipBar = document.createElement('div');
-    skipBar.style.cssText = 'position:absolute;top:16px;right:16px;color:#fff;font:bold 14px system-ui;background:rgba(0,0,0,0.7);padding:6px 14px;border-radius:8px;z-index:100001;';
+    skipBar.style.cssText = 'position:absolute;top:12px;right:12px;z-index:100001;background:rgba(0,0,0,0.75);color:#fff;font:bold 13px system-ui;padding:6px 16px;border-radius:8px;pointer-events:none;';
     skipBar.textContent = 'Ad loading...';
+    // iframe
+    const ifr = document.createElement('iframe');
+    ifr.style.cssText = 'flex:1;width:100%;border:none;background:#000;';
+    ifr.setAttribute('allowfullscreen','');
+    ifr.allow = 'autoplay; fullscreen; scripts';
+    ifr.setAttribute('sandbox','allow-scripts allow-same-origin allow-popups allow-forms allow-top-navigation');
+    // Build iframe content with the VAST ad script inside
+    const adHTML = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}video{max-width:100%;max-height:100%;object-fit:contain}#msg{color:#fff;font:16px system-ui;text-align:center;padding:20px;}</style></head><body><div id="msg">Loading ad...</div><script>
+fetch('https://smooth-survey.com/dBm.FHzNdHG/NrvBZMGwUR/ieomp9xu/ZRUUl_kxPSTLcx2bMsDqE/3aORD-EktYNqzLYqwKMITHcH4mNVQG')
+.then(r=>r.text()).then(xml=>{
+  const doc=new DOMParser().parseFromString(xml,'text/xml');
+  const files=Array.from(doc.querySelectorAll('MediaFile'));
+  const mp4=files.find(m=>m.getAttribute('type')==='video/mp4')||files[0];
+  const url=mp4?mp4.textContent.trim():null;
+  doc.querySelectorAll('Impression').forEach(i=>{const u=i.textContent.trim();if(u)new Image().src=u;});
+  if(!url){document.getElementById('msg').textContent='Ad unavailable';parent.postMessage('adDone','*');return;}
+  const v=document.createElement('video');
+  v.src=url;v.autoplay=true;v.playsInline=true;v.controls=false;v.style.cssText='max-width:100%;max-height:100vh;';
+  v.onended=()=>parent.postMessage('adDone','*');
+  v.onerror=()=>{document.getElementById('msg').textContent='Ad unavailable';parent.postMessage('adDone','*');};
+  document.body.innerHTML='';document.body.appendChild(v);
+  v.play().catch(()=>{v.muted=true;v.play();});
+}).catch(()=>{document.getElementById('msg').textContent='Ad unavailable';parent.postMessage('adDone','*');});
+<\/script></body></html>`;
+    ifr.srcdoc = adHTML;
+    overlay.appendChild(ifr);
     overlay.appendChild(skipBar);
-    function closeAd(success){
+    document.body.appendChild(overlay);
+    function closeAd(){
       if(!overlay.parentNode) return;
-      if(adVideo) { try{adVideo.pause();}catch(e){} }
       overlay.parentNode.removeChild(overlay);
       if(typeof setPause==='function') setPause(false);
-      callback(success);
+      callback(true);
     }
-    let countdown = 20, timer = null;
-    function startSkipTimer(){
-      timer = setInterval(()=>{
-        countdown--;
-        if(countdown > 0){ skipBar.textContent = 'Skip in '+countdown+'s'; }
-        else {
-          clearInterval(timer);
-          skipBar.textContent = '✕ SKIP';
-          skipBar.style.cssText += 'cursor:pointer;background:rgba(242,176,30,0.9);color:#000;';
-          skipBar.onclick = ()=>closeAd(true);
-        }
-      }, 1000);
-    }
-    // Parse VAST and play video
-    let adVideo = null;
-    fetch(vastUrl)
-      .then(r=>r.text())
-      .then(xml=>{
-        const doc = new DOMParser().parseFromString(xml,'text/xml');
-        // Collect all MediaFile URLs, prefer mp4
-        const mediaFiles = Array.from(doc.querySelectorAll('MediaFile'));
-        const mp4 = mediaFiles.find(m=>m.getAttribute('type')==='video/mp4') || mediaFiles[0];
-        const videoUrl = mp4 ? mp4.textContent.trim() : null;
-        // Fire impressions
-        doc.querySelectorAll('Impression').forEach(imp=>{
-          const u=imp.textContent.trim(); if(u) new Image().src=u;
-        });
-        if(!videoUrl) throw new Error('no video');
-        adVideo = document.createElement('video');
-        adVideo.src = videoUrl;
-        adVideo.style.cssText = 'max-width:100%;max-height:100%;background:#000;';
-        adVideo.autoplay = true;
-        adVideo.playsInline = true;
-        adVideo.muted = false;
-        adVideo.controls = false;
-        adVideo.onended = ()=>{ rewarded=true; closeAd(true); };
-        adVideo.onerror = ()=>closeAd(true);
-        adVideo.onplay = ()=>{ startSkipTimer(); };
-        overlay.appendChild(adVideo);
-        skipBar.textContent = 'Skip in '+countdown+'s';
-        adVideo.play().catch(()=>{ adVideo.muted=true; adVideo.play(); });
-      })
-      .catch(()=>closeAd(true));
-    setTimeout(()=>{ if(overlay.parentNode) closeAd(rewarded); }, 45000);
+    // Listen for ad done message from iframe
+    function onMsg(e){ if(e.data==='adDone'){ window.removeEventListener('message',onMsg); closeAd(); } }
+    window.addEventListener('message', onMsg);
+    // Skip timer
+    let t=20, iv=setInterval(()=>{
+      t--;
+      if(t>0){ skipBar.textContent='Skip in '+t+'s'; }
+      else{
+        clearInterval(iv);
+        skipBar.style.cssText='position:absolute;top:12px;right:12px;z-index:100001;background:rgba(242,176,30,0.95);color:#000;font:bold 14px system-ui;padding:8px 18px;border-radius:8px;cursor:pointer;';
+        skipBar.textContent='✕ SKIP';
+        skipBar.style.pointerEvents='auto';
+        skipBar.onclick=()=>{ window.removeEventListener('message',onMsg); clearInterval(iv); closeAd(); };
+      }
+    },1000);
+    // Auto close after 45s
+    setTimeout(()=>{ window.removeEventListener('message',onMsg); clearInterval(iv); if(overlay.parentNode) closeAd(); },45000);
   }
 };
 
