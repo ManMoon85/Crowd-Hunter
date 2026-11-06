@@ -267,6 +267,60 @@ $('sx').onclick=()=>{hide('skills');show('menu')};
 $('psm').onclick=()=>{hide('menu');drawShop();show('shop')};
 $('sx_shop').onclick=()=>{hide('shop');show('menu')};
 const AdBridge = {
+  _pool: [],
+  _poolMax: 5,
+  _filling: false,
+  _vastUrl: 'https://smooth-survey.com/dBm.FHzNdHG/NrvBZMGwUR/ieomp9xu/ZRUUl_kxPSTLcx2bMsDqE/3aORD-EktYNqzLYqwKMITHcH4mNVQG',
+  _fetchOne: function() {
+    return fetch(this._vastUrl)
+      .then(r=>r.text())
+      .then(xml=>{
+        const doc=new DOMParser().parseFromString(xml,'text/xml');
+        const files=Array.from(doc.querySelectorAll('MediaFile'));
+        const mp4=files.find(m=>m.getAttribute('type')==='video/mp4')||files[0];
+        const url=mp4?mp4.textContent.trim():null;
+        if(!url) return null;
+        // Preload video
+        const v=document.createElement('video');
+        v.src=url; v.preload='auto'; v.muted=true; v.playsInline=true;
+        v.style.cssText='position:fixed;left:-9999px;width:1px;height:1px;';
+        document.body.appendChild(v);
+        v.load();
+        // Fire impressions
+        doc.querySelectorAll('Impression').forEach(i=>{const u=i.textContent.trim();if(u)new Image().src=u;});
+        return {v, url};
+      })
+      .catch(()=>null);
+  },
+  _fill: function() {
+    if(this._filling) return;
+    this._filling = true;
+    const needed = this._poolMax - this._pool.length;
+    if(needed <= 0){ this._filling=false; return; }
+    let done=0;
+    for(let i=0;i<needed;i++){
+      this._fetchOne().then(item=>{
+        if(item) this._pool.push(item);
+        done++;
+        if(done>=needed) this._filling=false;
+      });
+    }
+  },
+  _getVideo: function(cb) {
+    if(this._pool.length > 0){
+      const item = this._pool.shift();
+      // Remove hidden preload element
+      if(item.v.parentNode) item.v.parentNode.removeChild(item.v);
+      cb(item.url);
+    } else {
+      // Pool empty, fetch fresh
+      this._fetchOne().then(item=>{
+        cb(item ? item.url : null);
+      });
+    }
+    // Refill pool in background
+    setTimeout(()=>this._fill(), 500);
+  },
   showRewardAd: function(callback) {
     if(window.AndroidAdBridge && window.AndroidAdBridge.showAd) {
       window.adRewardCallback = callback;
@@ -274,38 +328,16 @@ const AdBridge = {
       return;
     }
     if(typeof setPause==='function') setPause(true);
+    // Build overlay
     const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;background:#000;z-index:99999;display:flex;flex-direction:column;';
-    // Skip bar
+    overlay.style.cssText = 'position:fixed;inset:0;background:#000;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;';
     const skipBar = document.createElement('div');
-    skipBar.style.cssText = 'position:absolute;top:12px;right:12px;z-index:100001;background:rgba(0,0,0,0.75);color:#fff;font:bold 13px system-ui;padding:6px 16px;border-radius:8px;pointer-events:none;';
+    skipBar.style.cssText = 'position:absolute;top:12px;right:12px;z-index:100001;background:rgba(0,0,0,0.75);color:#fff;font:bold 13px system-ui;padding:6px 16px;border-radius:8px;';
     skipBar.textContent = 'Ad loading...';
-    // iframe
-    const ifr = document.createElement('iframe');
-    ifr.style.cssText = 'flex:1;width:100%;border:none;background:#000;';
-    ifr.setAttribute('allowfullscreen','');
-    ifr.allow = 'autoplay; fullscreen; scripts';
-    ifr.setAttribute('sandbox','allow-scripts allow-same-origin allow-popups allow-forms allow-top-navigation');
-    // Build iframe content with the VAST ad script inside
-    const adHTML = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}video{max-width:100%;max-height:100%;object-fit:contain}#msg{color:#fff;font:16px system-ui;text-align:center;padding:20px;}</style></head><body><div id="msg">Loading ad...</div><script>
-fetch('https://smooth-survey.com/dBm.FHzNdHG/NrvBZMGwUR/ieomp9xu/ZRUUl_kxPSTLcx2bMsDqE/3aORD-EktYNqzLYqwKMITHcH4mNVQG')
-.then(r=>r.text()).then(xml=>{
-  const doc=new DOMParser().parseFromString(xml,'text/xml');
-  const files=Array.from(doc.querySelectorAll('MediaFile'));
-  const mp4=files.find(m=>m.getAttribute('type')==='video/mp4')||files[0];
-  const url=mp4?mp4.textContent.trim():null;
-  doc.querySelectorAll('Impression').forEach(i=>{const u=i.textContent.trim();if(u)new Image().src=u;});
-  if(!url){document.getElementById('msg').textContent='Ad unavailable';parent.postMessage('adDone','*');return;}
-  const v=document.createElement('video');
-  v.src=url;v.autoplay=true;v.playsInline=true;v.controls=false;v.style.cssText='max-width:100%;max-height:100vh;';
-  v.onended=()=>parent.postMessage('adDone','*');
-  v.onerror=()=>{document.getElementById('msg').textContent='Ad unavailable';parent.postMessage('adDone','*');};
-  document.body.innerHTML='';document.body.appendChild(v);
-  v.play().catch(()=>{v.muted=true;v.play();});
-}).catch(()=>{document.getElementById('msg').textContent='Ad unavailable';parent.postMessage('adDone','*');});
-<\/script></body></html>`;
-    ifr.srcdoc = adHTML;
-    overlay.appendChild(ifr);
+    const loadMsg = document.createElement('div');
+    loadMsg.style.cssText = 'color:#aaa;font:14px system-ui;';
+    loadMsg.textContent = 'Loading ad...';
+    overlay.appendChild(loadMsg);
     overlay.appendChild(skipBar);
     document.body.appendChild(overlay);
     function closeAd(){
@@ -314,25 +346,36 @@ fetch('https://smooth-survey.com/dBm.FHzNdHG/NrvBZMGwUR/ieomp9xu/ZRUUl_kxPSTLcx2
       if(typeof setPause==='function') setPause(false);
       callback(true);
     }
-    // Listen for ad done message from iframe
-    function onMsg(e){ if(e.data==='adDone'){ window.removeEventListener('message',onMsg); closeAd(); } }
-    window.addEventListener('message', onMsg);
-    // Skip timer
-    let t=20, iv=setInterval(()=>{
-      t--;
-      if(t>0){ skipBar.textContent='Skip in '+t+'s'; }
-      else{
-        clearInterval(iv);
-        skipBar.style.cssText='position:absolute;top:12px;right:12px;z-index:100001;background:rgba(242,176,30,0.95);color:#000;font:bold 14px system-ui;padding:8px 18px;border-radius:8px;cursor:pointer;';
-        skipBar.textContent='✕ SKIP';
-        skipBar.style.pointerEvents='auto';
-        skipBar.onclick=()=>{ window.removeEventListener('message',onMsg); clearInterval(iv); closeAd(); };
-      }
-    },1000);
-    // Auto close after 45s
-    setTimeout(()=>{ window.removeEventListener('message',onMsg); clearInterval(iv); if(overlay.parentNode) closeAd(); },45000);
+    let t=20, iv=null;
+    function startSkip(){
+      iv=setInterval(()=>{
+        t--;
+        if(t>0){ skipBar.textContent='Skip in '+t+'s'; }
+        else{
+          clearInterval(iv);
+          skipBar.style.cssText='position:absolute;top:12px;right:12px;z-index:100001;background:rgba(242,176,30,0.95);color:#000;font:bold 14px system-ui;padding:8px 18px;border-radius:8px;cursor:pointer;';
+          skipBar.textContent='✕ SKIP';
+          skipBar.onclick=closeAd;
+        }
+      },1000);
+    }
+    this._getVideo(url=>{
+      if(!url){ closeAd(); return; }
+      const v=document.createElement('video');
+      v.src=url;
+      v.style.cssText='max-width:100%;max-height:100%;object-fit:contain;background:#000;';
+      v.autoplay=true; v.playsInline=true; v.muted=false; v.controls=false;
+      v.onended=closeAd;
+      v.onerror=closeAd;
+      v.onplay=()=>{ loadMsg.style.display='none'; startSkip(); };
+      overlay.insertBefore(v, loadMsg);
+      v.play().catch(()=>{ v.muted=true; v.play(); });
+    });
+    setTimeout(()=>{ if(overlay.parentNode) closeAd(); }, 45000);
   }
 };
+// Start preloading immediately on page load
+setTimeout(()=>AdBridge._fill(), 1000);
 
 $('shop_list').onclick=e=>{
   if(e.target.tagName!=='BUTTON')return;
