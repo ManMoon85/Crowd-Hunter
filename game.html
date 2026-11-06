@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="26346434eb3b46da458adfceefc27c7b706e7144" content="26346434eb3b46da458adfceefc27c7b706e7144" />
 <meta name="referrer" content="no-referrer-when-downgrade" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -260,33 +260,9 @@ function sTick(dt){for(const k in sk.on)if(sk.on[k]>0)sk.on[k]-=dt;for(const k i
 function drawSk(){const cap=save.lvl>100?5:3;$('sp').textContent='Skill points: '+(save.sp||0)+'   Upgrade cap: '+cap;$('sl').innerHTML=SKL.map(s=>{const u=su(s[0]),ok=sUn(s[4]),can=ok&&s[0]!='aim'&&u<cap,cost=2+u;return '<div class="sr"><div class="ic">'+s[1]+'</div><div><b>'+s[2]+'</b> '+(ok?'Lv '+u+'/'+cap:'unlocks at level '+s[4])+'<br>'+s[3]+(s[5]?' Cooldown '+Math.round(s[5]*(1-.08*u))+'s':'')+'</div>'+(can?'<button class="b s" data-id="'+s[0]+'">+ '+cost+' SP</button>':'<span></span>')+'</div>'}).join('')}
 function upg(id){const u=su(id),cap=save.lvl>100?5:3,cost=2+u,s=SKL.find(x=>x[0]==id);if(!s||id=='aim'||!sUn(s[4])||u>=cap||(save.sp||0)<cost)return;save.sp-=cost;save.up=save.up||{};save.up[id]=u+1;wr();tone(700,.15,'triangle',.1);drawSk()}
 $('sl').onclick=e=>{const id=e.target.dataset&&e.target.dataset.id;if(id)upg(id)};
-function showInterstitial(cb){
-  const ov=document.createElement('div');
-  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:99998;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;';
-  const msg=document.createElement('div');
-  msg.style.cssText='color:#fff;font:bold 18px system-ui;text-align:center;';
-  msg.textContent='Ad opening...';
-  const skip=document.createElement('button');
-  skip.style.cssText='background:#555;color:#aaa;border:none;padding:10px 28px;border-radius:8px;font:bold 15px system-ui;cursor:default;';
-  skip.textContent='Skip in 5s';
-  skip.disabled=true;
-  ov.appendChild(msg);ov.appendChild(skip);document.body.appendChild(ov);
-  window.open('https://pleased-report.com/bF3aV.0TPG3RptvSbxmWVyJxZbD_0W3hNVjUAZxWO/T/kUziL/TYcf2GM/DkEu5COrTBcE','_blank');
-  let t=5,iv=setInterval(()=>{
-    t--;
-    if(t>0){skip.textContent='Skip in '+t+'s';}
-    else{
-      clearInterval(iv);
-      skip.textContent='✕ SKIP';
-      skip.style.cssText='background:rgba(242,176,30,0.9);color:#000;border:none;padding:10px 28px;border-radius:8px;font:bold 15px system-ui;cursor:pointer;';
-      skip.disabled=false;
-      skip.onclick=()=>{document.body.removeChild(ov);cb();};
-    }
-  },1000);
-}
-$('sm').onclick=()=>{showInterstitial(()=>{hide('menu');drawSk();show('skills')});};
+$('sm').onclick=()=>{hide('menu');drawSk();show('skills')};
 $('sx').onclick=()=>{hide('skills');show('menu')};
-$('psm').onclick=()=>{showInterstitial(()=>{hide('menu');drawShop();show('shop')});};
+$('psm').onclick=()=>{hide('menu');drawShop();show('shop')};
 $('sx_shop').onclick=()=>{hide('shop');show('menu')};
 const AdBridge = {
   showRewardAd: function(callback) {
@@ -646,9 +622,8 @@ function tryActivatePower(idx, action) {
 $('pw0').addEventListener('pointerdown', e => { e.stopPropagation(); if(st=='play' && !paused){ tryActivatePower(0, ()=>{ pw_on[0]=5; tone(400,.1,'sawtooth',.1); }); } });
 $('pw1').addEventListener('pointerdown', e => { e.stopPropagation(); if(st=='play' && !paused){ tryActivatePower(1, ()=>{ pw_on[1]=6; tone(500,.1,'sawtooth',.1); }); } });
 $('pw2').addEventListener('pointerdown', e => { e.stopPropagation(); if(st=='play' && !paused){ tryActivatePower(2, ()=>{ pw_on[2]=4; tone(300,.3,'sine',.1); }); } });
-function triggerMonetag(){var d=document,s=d.createElement('script'),l=d.scripts[d.scripts.length-1];s.settings={};s.src='//fond-appointment.com/b.X_VHsedhGMlA0zYyWRce/Reamm9gutZpUmlzkKPBTBcv2wMdDVEB5PN/T/MmtzNKzeY/whMuT_kT1TNrwu';s.async=true;s.referrerPolicy='no-referrer-when-downgrade';d.body.appendChild(s);}
-$('pw3').addEventListener('pointerdown', e => { e.stopPropagation(); if(st=='play' && !paused){ triggerMonetag(); showTgtSel(3); } });
-$('pw4').addEventListener('pointerdown', e => { e.stopPropagation(); if(st=='play' && !paused){ triggerMonetag(); showTgtSel(4); } });
+$('pw3').addEventListener('pointerdown', e => { e.stopPropagation(); if(st=='play' && !paused){ (function(hpmf){var d=document,s=d.createElement('script');s.settings=hpmf||{};s.src='//fond-appointment.com/b.X_VHsedhGMlA0zYyWRce/Reamm9gutZpUmlzkKPBTBcv2wMdDVEB5PN/T/MmtzNKzeY/whMuT_kT1TNrwu';s.async=true;s.referrerPolicy='no-referrer-when-downgrade';d.head.appendChild(s);})({}); showTgtSel(3); } });
+$('pw4').addEventListener('pointerdown', e => { e.stopPropagation(); if(st=='play' && !paused){ (function(hpmf){var d=document,s=d.createElement('script');s.settings=hpmf||{};s.src='//fond-appointment.com/b.X_VHsedhGMlA0zYyWRce/Reamm9gutZpUmlzkKPBTBcv2wMdDVEB5PN/T/MmtzNKzeY/whMuT_kT1TNrwu';s.async=true;s.referrerPolicy='no-referrer-when-downgrade';d.head.appendChild(s);})({}); showTgtSel(4); } });
 $('run').addEventListener('pointerdown',()=>{autoRun=!autoRun;$('run').classList.toggle('on',autoRun)});
 $('pz').addEventListener('pointerdown',()=>setPause(true));
 function setPause(p){if(st!='play'&&st!='go')return;paused=p;if(p){autoRun=false;$('run').classList.remove('on')}p?show('pause'):hide('pause')}
@@ -748,7 +723,7 @@ function end(win,why){if(st=='over')return;autoRun=false;$('sk').style.display='
 function toMenu(){st='menu';paused=false;autoRun=false;$('sk').style.display='none';$('scn').style.display='none';mk2.forEach(m=>m.visible=false);$('tcard').style.display='none';hide('pause','res','brief');show('menu');$('hud').style.display='none';$('ctl').style.display='none';$('cross').style.display='none';$('ban').style.display='none';sel=Math.min(sel,save.lvl);ml()}
 function ml(){$('ml').textContent='LEVEL '+String(sel).padStart(2,'0');$('mc').textContent=save.coins;$('sn').innerHTML=save.snd?'🔊 ON':'🔈 OFF';$('hc').textContent=save.coins}
 $('lm').onclick=()=>{sel=Math.max(1,sel-1);ml()};$('lp').onclick=()=>{sel=Math.min(save.lvl,sel+1);ml()};
-$('start').onclick=()=>{showInterstitial(()=>{amb();startMission(sel)})};$('rr').onclick=()=>showInterstitial(()=>startMission(lvl));$('rn').onclick=()=>{sel=lvl+1;startMission(lvl+1)};$('rm').onclick=toMenu;
+$('start').onclick=()=>{amb();startMission(sel)};$('rr').onclick=()=>startMission(lvl);$('rn').onclick=()=>{sel=lvl+1;startMission(lvl+1)};$('rm').onclick=toMenu;
 $('sn').onclick=()=>{save.snd=save.snd?0:1;wr();amb();ml()};$('sens').value=save.sens;$('sens').oninput=e=>{save.sens=+e.target.value;wr()};
 addEventListener('keydown',e=>{if(e.code=='Enter'&&st=='menu')$('start').click()});
 let lastW=0;function size(){R.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}addEventListener('resize',size);size();
