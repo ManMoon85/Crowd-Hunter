@@ -263,23 +263,70 @@ $('sm').onclick=()=>{hide('menu');drawSk();show('skills')};
 $('sx').onclick=()=>{hide('skills');show('menu')};
 $('psm').onclick=()=>{hide('menu');drawShop();show('shop')};
 $('sx_shop').onclick=()=>{hide('shop');show('menu')};
-// Simulated Ad Interface mapping to Android WebView JavascriptInterface
+// Monetag VAST Rewarded Ad Integration
+// Website ID: 928704 | Zone IDs: 7601781-7601785 | Skip delay: 20s
+const MONETAG_ZONES = [7601781,7601782,7601783,7601784,7601785];
+let _monetagZoneIdx = 0;
+function _nextZone(){ const z=MONETAG_ZONES[_monetagZoneIdx%MONETAG_ZONES.length]; _monetagZoneIdx++; return z; }
+
 const AdBridge = {
   showRewardAd: function(callback) {
-    console.log("Requesting Ad from Native Bridge...");
+    // Android WebView native bridge takes priority
     if(window.AndroidAdBridge && window.AndroidAdBridge.showAd) {
       window.adRewardCallback = callback;
       window.AndroidAdBridge.showAd("window.adRewardCallback(true)", "window.adRewardCallback(false)");
-    } else {
-      // Fallback simulator for desktop testing only
-      $('ad_title').textContent = "LOADING AD...";
-      setTimeout(()=>{
-        if(Math.random() > 0.05) {
-          callback(true);
-        } else {
-          callback(false);
-        }
-      }, 1500);
+      return;
+    }
+    // Monetag VAST rewarded ad
+    const zoneId = _nextZone();
+    const overlay = document.createElement('div');
+    overlay.id = 'monetag_ad_overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:#000;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;';
+    const skipBar = document.createElement('div');
+    skipBar.style.cssText = 'position:absolute;top:16px;right:16px;color:#fff;font:bold 14px system-ui;background:rgba(0,0,0,0.6);padding:6px 14px;border-radius:8px;z-index:100001;';
+    skipBar.textContent = 'Ad loading...';
+    overlay.appendChild(skipBar);
+    document.body.appendChild(overlay);
+    // Pause game while ad plays
+    if(typeof setPause==='function') setPause(true);
+    let rewarded = false;
+    let skipAllowed = false;
+    let skipTimer = null;
+    let countdown = 20;
+    skipTimer = setInterval(()=>{
+      countdown--;
+      if(countdown > 0) {
+        skipBar.textContent = 'Skip in ' + countdown + 's';
+      } else {
+        clearInterval(skipTimer);
+        skipAllowed = true;
+        skipBar.textContent = '✕ SKIP';
+        skipBar.style.cursor = 'pointer';
+        skipBar.style.background = 'rgba(242,176,30,0.9)';
+        skipBar.style.color = '#000';
+        skipBar.onclick = () => closeAd(rewarded);
+      }
+    }, 1000);
+    function closeAd(success){
+      clearInterval(skipTimer);
+      if(overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      if(typeof setPause==='function') setPause(false);
+      callback(success);
+    }
+    // Load Monetag VAST tag into overlay iframe
+    try {
+      const script = document.createElement('script');
+      script.src = 'https://ophoacit.com/1?z=' + zoneId;
+      script.async = true;
+      script.setAttribute('data-cfasync','false');
+      // Mark rewarded on script load (ad impression)
+      script.onload = () => { rewarded = true; };
+      script.onerror = () => closeAd(false);
+      overlay.appendChild(script);
+      // Auto-close after 35s max
+      setTimeout(()=>{ if(overlay.parentNode) closeAd(rewarded); }, 35000);
+    } catch(e) {
+      closeAd(false);
     }
   }
 };
