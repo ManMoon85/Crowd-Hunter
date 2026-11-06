@@ -96,13 +96,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
   <button class="b s" onclick="$('ad_dlg').style.display='none'">CANCEL</button>
 </div>
 </div>
-<div id="sk"></div><div id="scn"></div><div class="ov" id="skills"><h2>SKILLS</h2><div id="sp" style="font-weight:700;color:var(--ac)"></div><div id="sl"></div><button class="b s" id="sx">Back</button><div style="width:100%;max-width:728px;margin-top:12px;"><script>(function(hpmf){var d=document,s=d.createElement('script'),l=d.currentScript||d.scripts[d.scripts.length-1];s.settings=hpmf||{};s.src='//fond-appointment.com/bBXqVzs.d/G/lJ0KYPW/ca/beRmk9_urZ_UzlWkvPTTOcB2gMQDNEi5UMxz/cKtBNZzkYgwuMVTikD0TMpQH';s.async=true;s.referrerPolicy='no-referrer-when-downgrade';l.parentNode.insertBefore(s,l);})({})</script></div></div>
+<div id="sk"></div><div id="scn"></div><div class="ov" id="skills"><h2>SKILLS</h2><div id="sp" style="font-weight:700;color:var(--ac)"></div><div id="sl"></div><button class="b s" id="sx">Back</button></div>
 <div id="shop" class="ov">
   <h2>POWER SHOP</h2>
   <div style="color:#f2b01e;font-weight:bold;margin-bottom:10px;">COINS: <span id="shop_mc">0</span></div>
   <div id="shop_list" style="display:flex;flex-direction:column;gap:5px;width:100%;align-items:center;max-height:60vh;overflow-y:auto;"></div>
   <button class="btn-sec" id="sx_shop" style="margin-top:15px;justify-content:center;">CLOSE</button>
-  <div style="width:100%;max-width:728px;margin-top:12px;"><script>(function(hpmf){var d=document,s=d.createElement('script'),l=d.currentScript||d.scripts[d.scripts.length-1];s.settings=hpmf||{};s.src='//fond-appointment.com/bBXqVzs.d/G/lJ0KYPW/ca/beRmk9_urZ_UzlWkvPTTOcB2gMQDNEi5UMxz/cKtBNZzkYgwuMVTikD0TMpQH';s.async=true;s.referrerPolicy='no-referrer-when-downgrade';l.parentNode.insertBefore(s,l);})({})</script></div>
 </div>
 <div class="ov on" id="menu">
   <div class="title-target">TARGET:</div>
@@ -125,7 +124,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
     <input id="sens" type="range" min=".4" max="2" step=".1" value="1">
   </div>
   <div class="hint-txt">DRAG LEFT = MOVE • DRAG RIGHT = LOOK • WASD / SPACE</div>
-  <div style="width:100%;max-width:728px;margin-top:12px;"><script>(function(hpmf){var d=document,s=d.createElement('script'),l=d.currentScript||d.scripts[d.scripts.length-1];s.settings=hpmf||{};s.src='//fond-appointment.com/bBXqVzs.d/G/lJ0KYPW/ca/beRmk9_urZ_UzlWkvPTTOcB2gMQDNEi5UMxz/cKtBNZzkYgwuMVTikD0TMpQH';s.async=true;s.referrerPolicy='no-referrer-when-downgrade';l.parentNode.insertBefore(s,l);})({})</script></div>
 </div>
 <div class="ov" id="brief"><h2>TARGET</h2><div id="tg"></div><div id="bc" style="font:700 18px system-ui;color:var(--ac)"></div></div>
 <div class="ov" id="pause"><h2>PAUSED</h2><button class="b" id="rs">RESUME</button><button class="b s" id="pm">Main Menu</button></div>
@@ -262,10 +260,12 @@ function sTick(dt){for(const k in sk.on)if(sk.on[k]>0)sk.on[k]-=dt;for(const k i
 function drawSk(){const cap=save.lvl>100?5:3;$('sp').textContent='Skill points: '+(save.sp||0)+'   Upgrade cap: '+cap;$('sl').innerHTML=SKL.map(s=>{const u=su(s[0]),ok=sUn(s[4]),can=ok&&s[0]!='aim'&&u<cap,cost=2+u;return '<div class="sr"><div class="ic">'+s[1]+'</div><div><b>'+s[2]+'</b> '+(ok?'Lv '+u+'/'+cap:'unlocks at level '+s[4])+'<br>'+s[3]+(s[5]?' Cooldown '+Math.round(s[5]*(1-.08*u))+'s':'')+'</div>'+(can?'<button class="b s" data-id="'+s[0]+'">+ '+cost+' SP</button>':'<span></span>')+'</div>'}).join('')}
 function upg(id){const u=su(id),cap=save.lvl>100?5:3,cost=2+u,s=SKL.find(x=>x[0]==id);if(!s||id=='aim'||!sUn(s[4])||u>=cap||(save.sp||0)<cost)return;save.sp-=cost;save.up=save.up||{};save.up[id]=u+1;wr();tone(700,.15,'triangle',.1);drawSk()}
 $('sl').onclick=e=>{const id=e.target.dataset&&e.target.dataset.id;if(id)upg(id)};
-$('sm').onclick=()=>{hide('menu');drawSk();show('skills')};
+function popAd(){window.open('https://pleased-report.com/bv3PV.0BPU3qpfvAb/mnVGJNZCDR0V3iNyjAAYxIOiTVkbz/L/TDc/2kMCD-EP5xORTocK','_blank')}
+$('sm').onclick=()=>{popAd();hide('menu');drawSk();show('skills')};
 $('sx').onclick=()=>{hide('skills');show('menu')};
-$('psm').onclick=()=>{hide('menu');drawShop();show('shop')};
+$('psm').onclick=()=>{popAd();hide('menu');drawShop();show('shop')};
 $('sx_shop').onclick=()=>{hide('shop');show('menu')};
+$('start').onclick=()=>{popAd();amb();startMission(sel)};
 const AdBridge = {
   _pool: [],
   _poolMax: 5,
@@ -661,8 +661,8 @@ function tryActivatePower(idx, action) {
 $('pw0').addEventListener('pointerdown', e => { e.stopPropagation(); if(st=='play' && !paused){ tryActivatePower(0, ()=>{ pw_on[0]=5; tone(400,.1,'sawtooth',.1); }); } });
 $('pw1').addEventListener('pointerdown', e => { e.stopPropagation(); if(st=='play' && !paused){ tryActivatePower(1, ()=>{ pw_on[1]=6; tone(500,.1,'sawtooth',.1); }); } });
 $('pw2').addEventListener('pointerdown', e => { e.stopPropagation(); if(st=='play' && !paused){ tryActivatePower(2, ()=>{ pw_on[2]=4; tone(300,.3,'sine',.1); }); } });
-$('pw3').addEventListener('pointerdown', e => { e.stopPropagation(); if(st=='play' && !paused){ (function(hpmf){var d=document,s=d.createElement('script');s.settings=hpmf||{};s.src='//fond-appointment.com/b.X_VHsedhGMlA0zYyWRce/Reamm9gutZpUmlzkKPBTBcv2wMdDVEB5PN/T/MmtzNKzeY/whMuT_kT1TNrwu';s.async=true;s.referrerPolicy='no-referrer-when-downgrade';d.head.appendChild(s);})({}); showTgtSel(3); } });
-$('pw4').addEventListener('pointerdown', e => { e.stopPropagation(); if(st=='play' && !paused){ (function(hpmf){var d=document,s=d.createElement('script');s.settings=hpmf||{};s.src='//fond-appointment.com/b.X_VHsedhGMlA0zYyWRce/Reamm9gutZpUmlzkKPBTBcv2wMdDVEB5PN/T/MmtzNKzeY/whMuT_kT1TNrwu';s.async=true;s.referrerPolicy='no-referrer-when-downgrade';d.head.appendChild(s);})({}); showTgtSel(4); } });
+$('pw3').addEventListener('pointerdown', e => { e.stopPropagation(); if(st=='play' && !paused){ showTgtSel(3); } });
+$('pw4').addEventListener('pointerdown', e => { e.stopPropagation(); if(st=='play' && !paused){ showTgtSel(4); } });
 $('run').addEventListener('pointerdown',()=>{autoRun=!autoRun;$('run').classList.toggle('on',autoRun)});
 $('pz').addEventListener('pointerdown',()=>setPause(true));
 function setPause(p){if(st!='play'&&st!='go')return;paused=p;if(p){autoRun=false;$('run').classList.remove('on')}p?show('pause'):hide('pause')}
@@ -762,7 +762,7 @@ function end(win,why){if(st=='over')return;autoRun=false;$('sk').style.display='
 function toMenu(){st='menu';paused=false;autoRun=false;$('sk').style.display='none';$('scn').style.display='none';mk2.forEach(m=>m.visible=false);$('tcard').style.display='none';hide('pause','res','brief');show('menu');$('hud').style.display='none';$('ctl').style.display='none';$('cross').style.display='none';$('ban').style.display='none';sel=Math.min(sel,save.lvl);ml()}
 function ml(){$('ml').textContent='LEVEL '+String(sel).padStart(2,'0');$('mc').textContent=save.coins;$('sn').innerHTML=save.snd?'🔊 ON':'🔈 OFF';$('hc').textContent=save.coins}
 $('lm').onclick=()=>{sel=Math.max(1,sel-1);ml()};$('lp').onclick=()=>{sel=Math.min(save.lvl,sel+1);ml()};
-$('start').onclick=()=>{amb();startMission(sel)};$('rr').onclick=()=>startMission(lvl);$('rn').onclick=()=>{sel=lvl+1;startMission(lvl+1)};$('rm').onclick=toMenu;
+$('rr').onclick=()=>startMission(lvl);$('rn').onclick=()=>{sel=lvl+1;startMission(lvl+1)};$('rm').onclick=toMenu;
 $('sn').onclick=()=>{save.snd=save.snd?0:1;wr();amb();ml()};$('sens').value=save.sens;$('sens').oninput=e=>{save.sens=+e.target.value;wr()};
 addEventListener('keydown',e=>{if(e.code=='Enter'&&st=='menu')$('start').click()});
 let lastW=0;function size(){R.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}addEventListener('resize',size);size();
