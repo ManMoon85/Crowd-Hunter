@@ -262,20 +262,27 @@ function upg(id){const u=su(id),cap=save.lvl>100?5:3,cost=2+u,s=SKL.find(x=>x[0]
 $('sl').onclick=e=>{const id=e.target.dataset&&e.target.dataset.id;if(id)upg(id)};
 function showInterstitial(cb){
   const ov=document.createElement('div');
-  ov.style.cssText='position:fixed;inset:0;background:#000;z-index:99998;display:flex;align-items:center;justify-content:center;';
-  const ifr=document.createElement('iframe');
-  ifr.src='https://pleased-report.com/bF3aV.0TPG3RptvSbxmWVyJxZbD_0W3hNVjUAZxWO/T/kUziL/TYcf2GM/DkEu5COrTBcE';
-  ifr.style.cssText='width:100%;height:100%;border:none;position:absolute;inset:0;';
-  ifr.allow='autoplay';
-  const skip=document.createElement('div');
-  skip.style.cssText='position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.75);color:#fff;font:bold 13px system-ui;padding:6px 14px;border-radius:8px;z-index:99999;';
-  skip.textContent='Please wait...';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:99998;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;';
+  const msg=document.createElement('div');
+  msg.style.cssText='color:#fff;font:bold 18px system-ui;text-align:center;';
+  msg.textContent='Ad opening...';
+  const skip=document.createElement('button');
+  skip.style.cssText='background:#555;color:#aaa;border:none;padding:10px 28px;border-radius:8px;font:bold 15px system-ui;cursor:default;';
+  skip.textContent='Skip in 5s';
+  skip.disabled=true;
+  ov.appendChild(msg);ov.appendChild(skip);document.body.appendChild(ov);
+  window.open('https://pleased-report.com/bF3aV.0TPG3RptvSbxmWVyJxZbD_0W3hNVjUAZxWO/T/kUziL/TYcf2GM/DkEu5COrTBcE','_blank');
   let t=5,iv=setInterval(()=>{
     t--;
     if(t>0){skip.textContent='Skip in '+t+'s';}
-    else{clearInterval(iv);skip.textContent='✕ SKIP';skip.style.cssText+=';cursor:pointer;background:rgba(242,176,30,0.9);color:#000;';skip.onclick=()=>{document.body.removeChild(ov);cb();};}
+    else{
+      clearInterval(iv);
+      skip.textContent='✕ SKIP';
+      skip.style.cssText='background:rgba(242,176,30,0.9);color:#000;border:none;padding:10px 28px;border-radius:8px;font:bold 15px system-ui;cursor:pointer;';
+      skip.disabled=false;
+      skip.onclick=()=>{document.body.removeChild(ov);cb();};
+    }
   },1000);
-  ov.appendChild(ifr);ov.appendChild(skip);document.body.appendChild(ov);
 }
 $('sm').onclick=()=>{showInterstitial(()=>{hide('menu');drawSk();show('skills')});};
 $('sx').onclick=()=>{hide('skills');show('menu')};
