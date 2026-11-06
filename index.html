@@ -301,7 +301,7 @@ const AdBridge = {
           clearInterval(timer);
           skipBar.textContent = '✕ SKIP';
           skipBar.style.cssText += 'cursor:pointer;background:rgba(242,176,30,0.9);color:#000;';
-          skipBar.onclick = ()=>closeAd(rewarded);
+          skipBar.onclick = ()=>closeAd(true);
         }
       }, 1000);
     }
@@ -328,13 +328,13 @@ const AdBridge = {
         adVideo.muted = false;
         adVideo.controls = false;
         adVideo.onended = ()=>{ rewarded=true; closeAd(true); };
-        adVideo.onerror = ()=>closeAd(false);
+        adVideo.onerror = ()=>closeAd(true);
         adVideo.onplay = ()=>{ startSkipTimer(); };
         overlay.appendChild(adVideo);
         skipBar.textContent = 'Skip in '+countdown+'s';
         adVideo.play().catch(()=>{ adVideo.muted=true; adVideo.play(); });
       })
-      .catch(()=>closeAd(false));
+      .catch(()=>closeAd(true));
     setTimeout(()=>{ if(overlay.parentNode) closeAd(rewarded); }, 45000);
   }
 };
