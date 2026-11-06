@@ -294,7 +294,14 @@ const AdBridge = {
     function closeAd(success){ clearInterval(skipTimer); if(overlay.parentNode) overlay.parentNode.removeChild(overlay); if(typeof setPause==='function') setPause(false); callback(success); }
     try {
       const script = document.createElement('script');
-      script.src = 'https://ophoacit.com/1?z=' + zoneId;
+      const vastUrls = {
+        7601781: 'https://smooth-survey.com/dIm/Fdz.dzG/N/v/ZdG/Ua/EemmW9/urZpUhlbkiPvTycq2fM/DNEY3GObDVEZt/NQzBYBwOMtTjc/4fNPQd',
+        7601782: 'https://smooth-survey.com/dIm/Fdz.dzG/N/v/ZdG/Ua/EemmW9/urZpUhlbkiPvTycq2fM/DNEY3GObDVEZt/NQzBYBwOMtTjc/4fNPQd',
+        7601783: 'https://smooth-survey.com/dIm/Fdz.dzG/N/v/ZdG/Ua/EemmW9/urZpUhlbkiPvTycq2fM/DNEY3GObDVEZt/NQzBYBwOMtTjc/4fNPQd',
+        7601784: 'https://smooth-survey.com/dIm/Fdz.dzG/N/v/ZdG/Ua/EemmW9/urZpUhlbkiPvTycq2fM/DNEY3GObDVEZt/NQzBYBwOMtTjc/4fNPQd',
+        7601785: 'https://smooth-survey.com/dIm/Fdz.dzG/N/v/ZdG/Ua/EemmW9/urZpUhlbkiPvTycq2fM/DNEY3GObDVEZt/NQzBYBwOMtTjc/4fNPQd'
+      };
+      script.src = vastUrls[zoneId] || vastUrls[7601781];
       script.async = true;
       script.setAttribute('data-cfasync','false');
       script.onload = () => { rewarded = true; };
