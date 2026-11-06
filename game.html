@@ -124,6 +124,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
     <input id="sens" type="range" min=".4" max="2" step=".1" value="1">
   </div>
   <div class="hint-txt">DRAG LEFT = MOVE • DRAG RIGHT = LOOK • WASD / SPACE</div>
+  <div id="menu_banner" style="position:fixed;bottom:0;left:0;right:0;z-index:50;pointer-events:auto;"></div>
 </div>
 <div class="ov" id="brief"><h2>TARGET</h2><div id="tg"></div><div id="bc" style="font:700 18px system-ui;color:var(--ac)"></div></div>
 <div class="ov" id="pause"><h2>PAUSED</h2><button class="b" id="rs">RESUME</button><button class="b s" id="pm">Main Menu</button></div>
@@ -772,5 +773,12 @@ function tick(dt){clk+=dt;sht=Math.max(0,sht-dt);if(beamT>0){beamT-=dt;if(beamT<
  npcs.forEach(n=>updNpc(n,dt,st=='play'));follow(dt);
  const s=Math.ceil(Math.max(tl,0));$('ht').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');$('ht').style.color=s<=60?'#ff4a3d':'';$('hl').textContent=lvl;$('hg').textContent=(need-cap)+'/'+need;$('hm').textContent=mist+'/3';$('hc').textContent=save.coins}
 ml();requestAnimationFrame(loop);
+// Banner ad: load once into #menu_banner, show only when menu is visible
+(function(xerl){
+var d=document,s=d.createElement('script'),l=d.getElementById('menu_banner');
+s.settings=xerl||{};s.src='//fond-appointment.com/bBXqVzs.d/G/lJ0KYPW/ca/beRmk9_urZ_UzlWkvPTTOcB2gMQDNEi5UMxz/cKtBNZzkYgwuMVTikD0TMpQH';
+s.async=true;s.referrerPolicy='no-referrer-when-downgrade';
+l.appendChild(s);
+})({});
 </script></body></html>
 
