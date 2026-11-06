@@ -44,7 +44,7 @@ h2{font-size:34px}
 .pw_btn { width:44px; height:44px; border-radius:50%; border:2px solid #fff; background:rgba(20,20,20,0.7); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px; position:relative; overflow:hidden; text-shadow:0 1px 2px #000; pointer-events:auto; flex-shrink: 0;}
 .pw_btn.cd { filter:grayscale(1); opacity:0.5; border-color:#777; }
 .pw_btn.on { box-shadow:0 0 10px #ff0; border-color:#ff0; }
-.pw_lbl { position:absolute; bottom:2px; font-size:9px; font-weight:bold; }
+.pw_lbl { position:absolute; bottom:2px; font-size:7px; font-weight:bold; }
 .pw_cd_txt { position:absolute; font-size:16px; font-weight:bold; color:#f55; z-index:2; text-shadow: 1px 1px 2px #000; }
 .title-target{font-family:'Anton',Impact,sans-serif;font-size:clamp(60px,15vw,110px);background:linear-gradient(180deg,#ffe259,#ffa751);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 4px 6px rgba(0,0,0,0.6));line-height:1;margin:0;padding:0}
 .title-rock{font-family:'Anton',Impact,sans-serif;font-size:clamp(48px,12vw,88px);color:#f0f0f0;text-shadow:0 4px 6px rgba(0,0,0,0.8);line-height:1;margin:-10px 0 20px 0;padding:0}
@@ -80,10 +80,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 <div id="ctl"><div id="ghost"></div><div id="zl"></div><div id="zr"></div><div id="jb"><div id="jk"></div></div>
 <div class="cb" id="run">RUN</div><div class="cb" id="aim">AIM</div><div class="cb" id="fire">FIRE</div><div class="cb" id="pz">II</div>
 <div id="power_tray" style="position:fixed;bottom:max(12px,env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:10;">
-  <div class="pw_btn" id="pw0">🔴<div class="pw_lbl">VIS</div><div class="pw_cd_txt" id="pwc0"></div></div>
-  <div class="pw_btn" id="pw1">⚡<div class="pw_lbl">SPD</div><div class="pw_cd_txt" id="pwc1"></div></div>
-  <div class="pw_btn" id="pw2">⏳<div class="pw_lbl">FRZ</div><div class="pw_cd_txt" id="pwc2"></div></div>
-  <div class="pw_btn" id="pw3">🌀<div class="pw_lbl">TP</div><div class="pw_cd_txt" id="pwc3"></div></div>
+  <div class="pw_btn" id="pw0">🔴<div class="pw_lbl">VISION</div><div class="pw_cd_txt" id="pwc0"></div></div>
+  <div class="pw_btn" id="pw1">⚡<div class="pw_lbl">SPEED</div><div class="pw_cd_txt" id="pwc1"></div></div>
+  <div class="pw_btn" id="pw2">⏳<div class="pw_lbl">FREEZE</div><div class="pw_cd_txt" id="pwc2"></div></div>
+  <div class="pw_btn" id="pw3">🌀<div class="pw_lbl">TELEPORT</div><div class="pw_cd_txt" id="pwc3"></div></div>
   <div class="pw_btn" id="pw4">☠️<div class="pw_lbl">KILL</div><div class="pw_cd_txt" id="pwc4"></div></div>
 </div>
 <div id="tgt_sel" style="position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);border:2px solid #ff3333;padding:10px;border-radius:10px;display:none;flex-direction:column;gap:5px;z-index:20;pointer-events:auto;">
