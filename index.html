@@ -266,7 +266,13 @@ $('sm').onclick=()=>{popAd();hide('menu');drawSk();show('skills')};
 $('sx').onclick=()=>{hide('skills');show('menu')};
 $('psm').onclick=()=>{popAd();hide('menu');drawShop();show('shop')};
 $('sx_shop').onclick=()=>{hide('shop');show('menu')};
-$('start').onclick=()=>{popAd();amb();startMission(sel)};
+$('start').onclick=()=>{
+  popAd();
+  var m=document.getElementById('rotate_msg');
+  if(m){m.style.display='flex';m._pending=true;}
+};
+function chkOrient(){var m=document.getElementById('rotate_msg');if(!m)return;if(m._pending&&window.innerWidth>window.innerHeight){m.style.display='none';m._pending=false;amb();startMission(sel);}else if(!m._pending){m.style.display='none';}}
+window.addEventListener('resize',chkOrient);
 const AdBridge = {
   _pool: [],
   _poolMax: 5,
@@ -812,6 +818,5 @@ function tick(dt){clk+=dt;sht=Math.max(0,sht-dt);if(beamT>0){beamT-=dt;if(beamT<
  npcs.forEach(n=>updNpc(n,dt,st=='play'));follow(dt);
  const s=Math.ceil(Math.max(tl,0));$('ht').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');$('ht').style.color=s<=60?'#ff4a3d':'';$('hl').textContent=lvl;$('hg').textContent=(need-cap)+'/'+need;$('hm').textContent=mist+'/3';$('hc').textContent=save.coins}
 ml();requestAnimationFrame(loop);
-function chkOrient(){var m=document.getElementById('rotate_msg');if(m)m.style.display=window.innerHeight>window.innerWidth?'flex':'none'}window.addEventListener('resize',chkOrient);chkOrient();
 </script></body></html>
 
