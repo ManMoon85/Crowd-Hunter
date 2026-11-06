@@ -296,10 +296,12 @@ const AdBridge = {
       if(typeof setPause==='function') setPause(false);
       callback(success);
     }
+    const zoneIds = [7601781,7601782,7601783,7601784,7601785];
+    const zoneId = zoneIds[Math.floor(Math.random()*zoneIds.length)];
     const iframe = document.createElement('iframe');
-    iframe.src = 'https://smooth-survey.com/dOm.FgzfdoGHNovAZeGYUZ/ceSmR9oumZsU/lpkPPNTHcu2SM_DKEQ3/OaDjEOtMN/zxYQw_MFTYcm4/NgQU';
-    iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
-    iframe.allow = 'autoplay; fullscreen';
+    iframe.src = 'https://user.hilltopads.com/api/ad?zone='+zoneId+'&wid=928704&type=interstitial';
+    iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;background:#000;';
+    iframe.allow = 'autoplay; fullscreen; payment';
     iframe.setAttribute('allowfullscreen','');
     iframe.onload = ()=>{ rewarded = true; };
     iframe.onerror = ()=>closeAd(false);
